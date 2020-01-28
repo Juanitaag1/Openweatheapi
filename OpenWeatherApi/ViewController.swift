@@ -35,31 +35,28 @@ class ViewController: UIViewController {
     @IBOutlet weak var HumidityLabel: UILabel!
     
     //Purpose: to get the input from the textfield and put it in the url string to get the url of the webpage of the api info
+    //Will separate the whitespace and just get the info separated by the ,
+    
     @IBAction func SubmitButton(_ sender: Any) {
        
         if let textInput = EnterCityTextField.text {
-            //check if the user input a city and country code
-            //separated by ,
             if textInput.contains(","){
                 let array = textInput.components(separatedBy: ",")
-                self.cityName = array[0]
-                self.country = array[1]
+                self.cityName = array[0].trimmingCharacters(in: .whitespaces)
+                self.country = array[1].trimmingCharacters(in: .whitespaces)
+                print(self.country)
                 fetch(withName: self.cityName, withCountry: self.country)
             }else{
                 self.cityName = textInput
                  fetch(withName: cityName)
             }
             
-            
-                      
             CityLabel.text = cityName + "'s Weather"
             getApipage()
             openApiWebPage(cityName: cityName)
             getCountryCode(countryCode: self.country)
             //Weather.fetch(withName: cityName)
            
-            
-            
         }
        
     }
