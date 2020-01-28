@@ -44,7 +44,12 @@ class ViewController: UIViewController {
                 let array = textInput.components(separatedBy: ",")
                 self.cityName = array[0]
                 self.country = array[1]
+                fetch(withName: self.cityName, withCountry: self.country)
+            }else{
+                self.cityName = textInput
+                 fetch(withName: cityName)
             }
+            
             
                       
             CityLabel.text = cityName + "'s Weather"
@@ -52,7 +57,8 @@ class ViewController: UIViewController {
             openApiWebPage(cityName: cityName)
             getCountryCode(countryCode: self.country)
             //Weather.fetch(withName: cityName)
-            fetch(withName: cityName)
+           
+            
             
         }
        
@@ -63,7 +69,49 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
     }
-
+    
+    // Read an User record from the server
+    //@paragm withName:name,
+//@param WithCountry: country
+    func fetch(withName name: String, withCountry country: String){
+        print(name)
+         // var weather: Weather?
+           let URLstring = "http://api.openweathermap.org/data/2.5/weather?q=\(name),\(country)&APPID=e9d54dc557259785058a0a8d0ed3a4f7"
+        
+            if let url = URL.init(string: URLstring){
+               let task = URLSession.shared.dataTask(with: url, completionHandler:
+               {(dataFromAPI, response, error) in
+                   print(String.init(data:dataFromAPI!, encoding: .ascii) ?? "no data")
+                   if let myWeather = try? JSONDecoder().decode(Weather.self, from:  dataFromAPI!){
+                       
+                                           print(myWeather.name ?? "No name")
+                                           print(myWeather.main ?? "No Main")
+                                           print(myWeather.main?.humidity  ?? "No Main.humanity")
+                                           print(myWeather.sys ?? "No Sys")
+                                           print(myWeather.sys?.country  ?? "No sys.country")
+                                           print(myWeather.id )
+                       
+                       DispatchQueue.main.async {
+                           self.temp = " Temperature: \(String(describing: myWeather.main!.temp))"
+                           self.TempLabel.text = self.temp
+                           self.humidity = "Humidity: \(String(describing: myWeather.main!.humidity))"
+                           self.HumidityLabel.text = self.humidity
+                          /* weather!.name = myWeather.name
+                                             weather!.id = myWeather.id
+                                             weather!.main = myWeather.main
+                                             weather!.sys = myWeather.sys*/
+                       }
+                     
+                    
+                                       }
+                   
+                                   })
+                                   task.resume()
+                    
+               }
+          // print( weather.name, weather.id, weather.main?.temp ?? "No Temp", weather.sys)
+          
+       }
     
     // Read an User record from the server
        func fetch(withName name: String){
